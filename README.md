@@ -1,4 +1,4 @@
 # LabMicro
 Laboratorio - Microprogramación 2019
-## Autor
-* Javier Mollinedo
+### Autor
+1062217 - Javier Mollinedo
