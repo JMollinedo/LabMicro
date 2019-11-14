@@ -1,3 +1,36 @@
+MulCad MACRO cad,res,tam,fac
+	PUSHA
+
+	;Limpiar Registros
+	XOR EAX , EAX
+	XOR EBX , EBX
+	XOR ECX , ECX
+	XOR EDX , EDX
+	XOR SI , SI
+	XOR DI , DI
+
+	;limpiar destino
+	MOV CL , tam
+	cic:
+	MOV SI , CX
+	MOV res[SI] , 0
+	LOOP cic
+
+	;multiplicar
+	MOV CL , tam
+	MOV SI , 0
+	recor:
+	XOR AX , AX
+	MOV AL , cad[SI]
+	MUL fac
+	ADD res[SI] , AL
+	INC SI
+	ADD res[SI] , AH
+	LOOP recor
+
+	POPA
+ENDM
+
 .386
 ;model
 .MODEL FLAT, STDCALL ;flat = small
@@ -12,15 +45,14 @@ INCLUDELIB \masm32\lib\kernel32.lib
 INCLUDELIB \masm32\lib\masm32.lib
 
 .DATA
-	itr DB "Ingrese numero de tres cifras. ej: 003 , 012 , 101",10,13,0
+	itr DB "Ingrese numero de tres cifras",10,13,0
 	mer DB "FACTORAL DE ",0
-	cien DB 100
 	diez DB 10
-	tmp DB 100 dup(0)
-	res DB 100 dup(0)
 .DATA?
+	dir DB ?,0
 	cad DB 3 dup(?)
 	n1 DB ?
+	res DB 100 dup(0)
 .CODE
 program:
 main PROC
@@ -40,51 +72,22 @@ main PROC
 
 	MOV AL , cad[0]
 	SUB AL , 30h
-	MUL cien
+	MUL diez
+	MUL diez
 	ADD n1 , AL
 
 	INVOKE StdOut, ADDR mer
 	print str$(n1),10,13
 
+	XOR EAX , EAX
+	XOR EDX , EDX
 	XOR ECX , ECX
-
-	MOV tmp , 1
+	MOV EAX , 1
 	MOV CL , n1
-	multip:
-	XOR ESI , ESI
-	XOR EDI , EDI
-		next:
-		XOR EAX , EAX
-		MOV AL , tmp[ESI]
-		MUL CL
-		ADD res[ESI] , AL
-		ADD res[ESI+1] , AH
-
-		INC SI
-		CMP SI , 100
-		JNZ next
-		cut:
-		XOR EAX , EAX
-		MOV AL , res[EDI]
-		MOV tmp[EDI] , AL
-		MOV res[EDI] , 0
-		INC DI
-		CMP DI , 100
-		JNZ cut
+multip:	
+		MUL ECX
 	LOOP multip
-	XOR ECX , ECX
-	XOR EBX , EBX
-	MOV CL , 100
-	MOV ESI , 99
-	most:
-		MOV AL , tmp[ESI]
-		MOV n1 , AL
-		DEC SI
-		PUSHA
-		print str$(n1)
-		POPA
-
-	LOOP most
+	print str$(EAX),10,13
 fin:
 	INVOKE ExitProcess,0
 main ENDP
