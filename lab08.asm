@@ -1,33 +1,16 @@
-MulCad MACRO cad,res,tam,fac
+Facto MACRO num,res
 	PUSHA
-
+	
 	;Limpiar Registros
 	XOR EAX , EAX
-	XOR EBX , EBX
 	XOR ECX , ECX
-	XOR EDX , EDX
-	XOR SI , SI
-	XOR DI , DI
 
-	;limpiar destino
-	MOV CL , tam
-	cic:
-	MOV SI , CX
-	MOV res[SI] , 0
-	LOOP cic
-
-	;multiplicar
-	MOV CL , tam
-	MOV SI , 0
-	recor:
-	XOR AX , AX
-	MOV AL , cad[SI]
-	MUL fac
-	ADD res[SI] , AL
-	INC SI
-	ADD res[SI] , AH
-	LOOP recor
-
+	MOV EAX , 1
+	MOV CL , num
+	multip:	
+		MUL ECX
+	LOOP multip
+	MOV res , EAX
 	POPA
 ENDM
 
@@ -49,10 +32,9 @@ INCLUDELIB \masm32\lib\masm32.lib
 	mer DB "FACTORAL DE ",0
 	diez DB 10
 .DATA?
-	dir DB ?,0
 	cad DB 3 dup(?)
 	n1 DB ?
-	res DB 100 dup(0)
+	res DD ?
 .CODE
 program:
 main PROC
@@ -78,16 +60,8 @@ main PROC
 
 	INVOKE StdOut, ADDR mer
 	print str$(n1),10,13
-
-	XOR EAX , EAX
-	XOR EDX , EDX
-	XOR ECX , ECX
-	MOV EAX , 1
-	MOV CL , n1
-multip:	
-		MUL ECX
-	LOOP multip
-	print str$(EAX),10,13
+	Facto n1,res
+	print str$(res),10,13
 fin:
 	INVOKE ExitProcess,0
 main ENDP
